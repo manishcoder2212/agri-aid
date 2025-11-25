@@ -1,0 +1,377 @@
+<!-- index.html (fixed: no syntax error) -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AgriAid — Prototype</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#F5F7FB; --card:#fff; --muted:#6b7280;
+      --accent-1:#16a34a; --accent-2:#06b6d4; --accent-3:#f59e0b;
+      --radius:12px; --pad:16px; --shadow: 0 10px 24px rgba(12,20,39,0.06);
+    }
+    html,body{height:100%;margin:0;font-family:'Inter',sans-serif;background:linear-gradient(180deg,#EEF2F7,#F8FAFC);color:#04293A}
+    .container{max-width:1100px;margin:28px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .logo{display:flex;gap:12px;align-items:center}
+    .logo-badge{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+    h1{margin:0;font-size:20px}
+    .subtitle{display:block;font-size:12px;color:var(--muted)}
+    .controls select{padding:8px;border-radius:8px;border:1px solid #e6eef2}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+    .card{background:var(--card);border-radius:var(--radius);padding:var(--pad);box-shadow:var(--shadow);border:1px solid rgba(10,20,30,0.03)}
+    .col-7{grid-column:span 7}.col-5{grid-column:span 5}.col-12{grid-column:span 12}
+    label.field{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+    input[type="text"],input[type="number"]{width:100%;padding:10px;border-radius:10px;border:1px solid #e6eef2;margin-top:6px}
+    .actions{display:flex;gap:10px;margin-top:12px}
+    .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+    .btn-primary{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:white}
+    .btn-ghost{background:transparent;border:1px solid rgba(10,20,30,0.05)}
+    .muted{color:var(--muted);font-size:13px;margin-top:6px}
+    /* NEW output styles */
+    .list {margin-top:12px;display:flex;flex-direction:column;gap:10px}
+    .crop-card{border-radius:10px;padding:12px;border:1px solid rgba(10,20,30,0.03);background:linear-gradient(180deg,#fff,#fbfeff);display:flex;justify-content:space-between;align-items:center}
+    .crop-left{display:flex;flex-direction:column;gap:6px}
+    .score-badge{background:linear-gradient(90deg,var(--accent-1),#22c55e);color:white;padding:6px 10px;border-radius:999px;font-weight:700}
+    .reason{font-size:13px;color:var(--muted)}
+    .chip{display:inline-block;padding:6px 8px;border-radius:999px;background:#f1f5f9;color:#0f172a;font-weight:600;font-size:12px;margin-left:8px}
+    .fert-list{list-style:none;padding-left:10px;margin:8px 0}
+    .fert-list li{padding:8px;border-radius:8px;border:1px dashed rgba(10,20,30,0.03);background:#fcfffb;margin-bottom:6px}
+    .meta-table{margin-top:10px;border-collapse:collapse;width:100%}
+    .meta-table td{padding:8px;border-radius:8px}
+    .pest-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .pest-pill{background:#fff7ed;border:1px solid rgba(245,158,11,0.12);padding:6px 10px;border-radius:999px;color:#92400e;font-weight:700}
+    .chat-window{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow:auto;padding:8px}
+    .bubble{max-width:75%;padding:10px;border-radius:12px;background:#eef2ff}
+    .bubble.me{align-self:flex-end;background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:#fff}
+    .placeholder{color:var(--muted);font-size:13px;padding:8px;border-radius:8px;background:#fbfdff;border:1px solid rgba(10,20,30,0.02)}
+    @media(max-width:900px){.col-7,.col-5{grid-column:span 12}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-badge">Ag</div>
+        <div>
+          <h1>AgriAid <span class="subtitle">Digital empowerment for farmers</span></h1>
+        </div>
+      </div>
+      <div class="controls">
+        <div style="text-align:right">
+          <div style="font-size:12px;color:var(--muted)">Language</div>
+          <select id="lang"><option value="en">English</option><option value="mr">मराठी</option></select>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="grid">
+        <section class="card col-7">
+          <h3 id="cropTitle">Crop Suggestion</h3>
+          <div class="muted">Tell us about your soil and rainfall to get crop suggestions</div>
+
+          <label class="field" id="phLabel">Soil pH:
+            <input type="number" step="0.1" id="soil_ph" value="6.5" />
+          </label>
+
+          <label class="field" id="rainLabel">Avg rainfall (mm/year):
+            <input type="number" id="rain" value="450" />
+          </label>
+
+          <div class="actions">
+            <button id="suggestBtn" class="btn btn-primary">Suggest Crops</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('soil_ph').value=6.5;document.getElementById('rain').value=450;">Reset</button>
+          </div>
+
+          <!-- NEW nicely formatted output -->
+          <div id="cropResult" class="list placeholder">Results will appear here.</div>
+        </section>
+
+        <aside class="col-5">
+          <div class="card">
+            <h3 id="soilTitle">Soil Analysis</h3>
+            <div class="muted">Enter lab values (ppm)</div>
+
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1">
+                <label class="field">Nitrogen (ppm):
+                  <input id="n" type="number" value="180" />
+                </label>
+              </div>
+              <div style="flex:1">
+                <label class="field">Phosphorus (ppm):
+                  <input id="p" type="number" value="12" />
+                </label>
+              </div>
+            </div>
+
+            <label class="field">Potassium (ppm):
+              <input id="k" type="number" value="160" />
+            </label>
+
+            <label class="field">Crop (for dosage):
+              <input id="cropName" type="text" value="maize" />
+            </label>
+
+            <div class="actions">
+              <button id="analyzeBtn" class="btn btn-primary">Analyze Soil</button>
+              <button class="btn btn-ghost" onclick="document.getElementById('n').value=180;document.getElementById('p').value=12;document.getElementById('k').value=160;">Reset</button>
+            </div>
+
+            <div id="soilResult" class="placeholder">Soil advice will appear here.</div>
+          </div>
+
+          <div class="card" style="margin-top:14px">
+            <h3 id="weatherTitle">Weather Advisory</h3>
+            <div class="muted">Local weather guidance for spraying & irrigation</div>
+
+            <label class="field">Location:
+              <input id="location" type="text" value="Sangli, Maharashtra" />
+            </label>
+
+            <div class="actions">
+              <button id="weatherBtn" class="btn btn-primary">Get Advisory</button>
+              <button class="btn btn-ghost" onclick="document.getElementById('location').value='Sangli, Maharashtra'">Reset</button>
+            </div>
+
+            <div id="weatherResult" class="placeholder">Weather advisory will appear here.</div>
+          </div>
+        </aside>
+
+        <section class="card col-12" style="display:grid;grid-template-columns:1fr 360px;gap:16px">
+          <div>
+            <h3 id="pestTitle">Pest & Disease</h3>
+            <div class="muted">Check common pest warnings and early signs</div>
+
+            <label class="field">Crop:
+              <input id="pestCrop" type="text" value="maize" />
+            </label>
+
+            <div class="actions">
+              <button id="pestBtn" class="btn btn-primary">Check Warnings</button>
+            </div>
+
+            <div id="pestResult" class="placeholder">Pest results will appear here.</div>
+          </div>
+
+          <div>
+            <h3 id="chatTitle">Chatbot</h3>
+            <div class="muted">Ask about what to sow, soil pH, or weather</div>
+
+            <label class="field" style="margin-top:8px;">
+              <input id="chatMsg" type="text" placeholder="Ask: what to sow? or soil ph?" style="padding:10px;border-radius:10px;border:1px solid #e6eef2;width:100%" />
+            </label>
+
+            <div class="actions">
+              <button id="chatBtn" class="btn btn-primary">Send</button>
+            </div>
+
+            <div id="chatResult" class="chat-window placeholder">Chat response will appear here.</div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer style="margin-top:18px;text-align:center;color:var(--muted);font-size:13px">
+      Prototype — Use recommendations as guidance; verify with a local agronomist.
+    </footer>
+  </div>
+
+<script>
+const base = "http://127.0.0.1:5000/api";
+
+/* --- safe translation object (no syntax errors) --- */
+const TRANSLATIONS = {
+  en: {
+    "Crop Suggestion":"Crop Suggestion",
+    "Soil pH:":"Soil pH:",
+    "Avg rainfall (mm/year):":"Avg rainfall (mm/year):",
+    "Suggest Crops":"Suggest Crops",
+    "Soil Analysis":"Soil Analysis",
+    "Analyze Soil":"Analyze Soil",
+    "Weather Advisory":"Weather Advisory",
+    "Get Advisory":"Get Advisory",
+    "Pest & Disease":"Pest & Disease",
+    "Check Warnings":"Check Warnings",
+    "Chatbot":"Chatbot",
+    "Send":"Send",
+  },
+  mr: {
+    "Crop Suggestion":"पीक सुचना",
+    "Soil pH:":"माती pH:",
+    "Avg rainfall (mm/year):":"सरासरी पाऊस (mm/वर्ष):",
+    "Suggest Crops":"पीक सुचवा",
+    "Soil Analysis":"माती विश्लेषण",
+    "Analyze Soil":"विश्लेषण करा",
+    "Weather Advisory":"हवामान सल्ला",
+    "Get Advisory":"सल्ला मिळवा",
+    "Pest & Disease":"कीड व रोग",
+    "Check Warnings":"इशारा तपासा",
+    "Chatbot":"चॅटबॉट",
+    "Send":"पाठवा",
+  }
+};
+
+function t(key){
+  const lang = document.getElementById('lang').value || 'en';
+  return (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || key;
+}
+
+function applyLang() {
+  document.getElementById('cropTitle').innerText = t("Crop Suggestion");
+  // we only change big labels to avoid layout jumps
+  document.getElementById('soilTitle').innerText = t("Soil Analysis");
+  document.getElementById('weatherTitle').innerText = t("Weather Advisory");
+  document.getElementById('pestTitle').innerText = t("Pest & Disease");
+  document.getElementById('chatTitle').innerText = t("Chatbot");
+}
+document.getElementById('lang').addEventListener('change', applyLang);
+applyLang();
+
+/* --- Helpers to render nice output --- */
+function clearPlaceholder(el) {
+  el.classList.remove('placeholder');
+  el.innerHTML = '';
+}
+
+function showCropSuggestions(suggestions) {
+  const out = document.getElementById('cropResult');
+  if (!suggestions || suggestions.length === 0) {
+    out.classList.add('placeholder'); out.innerText = 'No suggestions found.'; return;
+  }
+  clearPlaceholder(out);
+  suggestions.forEach(s => {
+    const card = document.createElement('div'); card.className = 'crop-card';
+    const left = document.createElement('div'); left.className = 'crop-left';
+    const name = document.createElement('div'); name.innerHTML = `<strong style="font-size:15px">${s.crop.charAt(0).toUpperCase()+s.crop.slice(1)}</strong>`;
+    const reason = document.createElement('div'); reason.className='reason'; reason.innerText = s.reason;
+    left.appendChild(name); left.appendChild(reason);
+    const right = document.createElement('div'); right.style.display='flex'; right.style.alignItems='center';
+    const score = document.createElement('div'); score.className='score-badge'; score.innerText = s.score;
+    right.appendChild(score);
+    card.appendChild(left); card.appendChild(right);
+    out.appendChild(card);
+  });
+}
+
+function showFertilizerSuggestions(list) {
+  const el = document.getElementById('soilResult');
+  if (!list || list.length===0){ el.classList.add('placeholder'); el.innerText='No fertilizer suggestions.'; return;}
+  clearPlaceholder(el);
+  const ul = document.createElement('ul'); ul.className='fert-list';
+  list.forEach(it => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${it.nutrient}</strong> — ${it.suggestion}`;
+    ul.appendChild(li);
+  });
+  el.appendChild(ul);
+}
+
+function showWeatherAdvisory(ad) {
+  const el = document.getElementById('weatherResult'); clearPlaceholder(el);
+  const head = document.createElement('div'); head.innerHTML = `<strong>${ad.short}</strong>`;
+  const detail = document.createElement('div'); detail.className='muted'; detail.style.marginTop='8px'; detail.innerText = ad.detail || '';
+  el.appendChild(head); el.appendChild(detail);
+  if (ad.meta) {
+    const table = document.createElement('table'); table.className='meta-table';
+    table.innerHTML = `
+      <tr><td>Temp</td><td>${ad.meta.temp_c ?? '-'} °C</td></tr>
+      <tr><td>Humidity</td><td>${ad.meta.humidity_pct ?? '-'} %</td></tr>
+      <tr><td>Wind</td><td>${ad.meta.wind_m_s ?? '-'} m/s</td></tr>
+      <tr><td>Rain risk (24h)</td><td>${ad.meta.rain_risk_24 ?? '-'} </td></tr>
+    `;
+    el.appendChild(table);
+  }
+}
+
+function showPestWarnings(warnings) {
+  const el = document.getElementById('pestResult');
+  if (!warnings || warnings.length===0){ el.classList.add('placeholder'); el.innerText='No common pest warnings.'; return; }
+  clearPlaceholder(el);
+  const wrap = document.createElement('div'); wrap.className='pest-badges';
+  warnings.forEach(w => {
+    const pill = document.createElement('div'); pill.className='pest-pill'; pill.innerText = w.name.replace('_',' ');
+    pill.title = w.message;
+    wrap.appendChild(pill);
+  });
+  el.appendChild(wrap);
+  warnings.forEach(w => {
+    const d = document.createElement('div'); d.style.marginTop='8px'; d.innerHTML = `<strong>${w.name.replace('_',' ')}</strong><div class="muted">${w.message}</div>`;
+    el.appendChild(d);
+  });
+}
+
+function appendChatMessage(text, fromMe=false){
+  const el = document.getElementById('chatResult'); if (el.classList.contains('placeholder')) { el.classList.remove('placeholder'); el.innerHTML=''; }
+  const b = document.createElement('div'); b.className='bubble '+(fromMe ? 'me' : '');
+  b.innerText = text;
+  el.appendChild(b);
+  el.scrollTop = el.scrollHeight;
+}
+
+/* --- Event handlers (use same endpoint calls) --- */
+document.getElementById('suggestBtn').addEventListener('click', async () => {
+  const ph = parseFloat(document.getElementById('soil_ph').value);
+  const rain = parseFloat(document.getElementById('rain').value);
+  const res = await fetch(base + "/crop_suggestions", {
+    method: "POST", headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({soil_ph: ph, avg_rainfall_mm: rain})
+  }).then(r=>r.json());
+  showCropSuggestions(res.suggestions);
+});
+
+document.getElementById('analyzeBtn').addEventListener('click', async () => {
+  const n = parseFloat(document.getElementById('n').value);
+  const p = parseFloat(document.getElementById('p').value);
+  const k = parseFloat(document.getElementById('k').value);
+  const crop = document.getElementById('cropName').value;
+  const res = await fetch(base + "/soil_analysis", {
+    method: "POST", headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({nitrogen_ppm:n, phosphorus_ppm:p, potassium_ppm:k, crop})
+  }).then(r=>r.json());
+  showFertilizerSuggestions(res.fertilizer_suggestions);
+});
+
+document.getElementById('weatherBtn').addEventListener('click', async () => {
+  const loc = document.getElementById('location').value;
+  const res = await fetch(base + "/weather_advisory", {
+    method: "POST", headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({location: loc})
+  }).then(r=>r.json());
+  showWeatherAdvisory(res.advisory || {});
+});
+
+document.getElementById('pestBtn').addEventListener('click', async () => {
+  const crop = document.getElementById('pestCrop').value;
+  const res = await fetch(base + "/pest_warning", {
+    method: "POST", headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({crop})
+  }).then(r=>r.json());
+  showPestWarnings(res.warnings);
+});
+
+document.getElementById('chatBtn').addEventListener('click', async () => {
+  const msg = document.getElementById('chatMsg').value;
+  if(!msg || msg.trim()==="") return;
+  appendChatMessage(msg, true);
+  document.getElementById('chatMsg').value='';
+  const res = await fetch(base + "/chatbot", {
+    method: "POST", headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({message: msg})
+  }).then(r=>r.json());
+  appendChatMessage(res.reply || 'No reply');
+});
+
+/* initialize placeholders */
+document.getElementById('cropResult').classList.add('placeholder');
+document.getElementById('soilResult').classList.add('placeholder');
+document.getElementById('weatherResult').classList.add('placeholder');
+document.getElementById('pestResult').classList.add('placeholder');
+document.getElementById('chatResult').classList.add('placeholder');
+
+</script>
+</body>
+</html>
